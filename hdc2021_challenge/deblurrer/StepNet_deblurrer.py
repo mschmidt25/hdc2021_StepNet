@@ -38,9 +38,9 @@ RADIUS_DICT = {
 
 DOWN_SHAPES = {
     1 : (1460, 2360),
-    2 : (),
-    3 : ()
-    }
+    2 : (730, 1180),
+    3 : (365, 590)
+}
 
 
 class StepNetDeblurrer(pl.LightningModule):
