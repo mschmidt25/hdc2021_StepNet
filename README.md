@@ -10,7 +10,7 @@ pip install -e .
 ```
 Make sure to have git-lfs installed to pull the weight files for the model. 
 
-If the bandwith limit of the git is reached, you can also download the weights from this link: TODO
+If the bandwith limit of the git is reached, you can also download the weights from this link: https://seafile.zfn.uni-bremen.de/d/0d90fed4f14b45bf9213/
 
 ## Usage 
 
