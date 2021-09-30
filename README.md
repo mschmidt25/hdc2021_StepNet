@@ -19,15 +19,17 @@ python hdc2021_challenge/main.py path-to-input-files path-to-output-files step
 ```
 
 ## Method
-The StepNet $$F: Y \rightarrow X$$ is a fully-learned and purely data-driven inversion model. It directly maps blurry measurements $$y^\delta$$ to reconstructions $$\hat{x}$$. The StepNet itself consists of 20 sub-networks $$F_i$$, ($$i=0,...,19$$), which are connected in sequence $$F_0 \circ F_1 \circ ... \circ F_{19}$$. The task of a sub-network $$F_i$$ is to receive an input with blurring level $$i$$ and produce an output at blurring level $$i-1$$. For our implementation of the StepNet model, we use 20 small U-Nets for the sub-networks.
+The StepNet $F: Y \rightarrow X$ is a fully-learned and purely data-driven inversion model. It directly maps blurry measurements $y^\delta$ to reconstructions $\hat{x}$. The StepNet itself consists of 20 sub-networks $F_i$, ($i=0,...,19$), which are connected in sequence $F_0 \circ F_1 \circ ... \circ F_{19}$. The task of a sub-network $F_i$ is to receive an input with blurring level $i$ and produce an output at blurring level $i-1$. For our implementation of the StepNet model, we use 20 small U-Nets for the sub-networks.
 
 ### Reconstruction
-The structure of the network is dynamic and directly depends on the current blurring step. Let's consider a blurry image $$y^\delta_i$$ at step $$i$$. The first $$i+1$$ sub-networks will be active for the reconstruction process: $$\hat{x} = F_0 \circ F_1 \circ ... \circ F_i(y^\delta_i)$$.
+The structure of the network is dynamic and directly depends on the current blurring step. Let's consider a blurry image $y^\delta_i$ at step $i$. The first $i+1$ sub-networks will be active for the reconstruction process: 
+
+$$\hat{x} = F_0 \circ F_1 \circ ... \circ F_i(y^\delta_i)$$.
 
 Notice: The model will use more GPU memory and take longer for higher blurring steps.
 
 ### Training
-The StepNet training involves 20 different steps to gradually adapt the parameters of each sub-network $$F_i$$. During the training at step $$i$$, only the parameters of $$F_i$$ can be changed. All other weights are frozen. We start the training at blurring step $$i=0$$ and run this training for a fixed number of epochs. Afterwards, the best parameter combination w.r.t. the OCR performance on the validation set is selected and used for the specific sub-network. This produce is repeated until the end of step $$i=19$$ is reached.
+The StepNet training involves 20 different steps to gradually adapt the parameters of each sub-network $F_i$. During the training at step $i$, only the parameters of $F_i$ can be changed. All other weights are frozen. We start the training at blurring step $i=0$ and run this training for a fixed number of epochs. Afterwards, the best parameter combination w.r.t. the OCR performance on the validation set is selected and used for the specific sub-network. This produce is repeated until the end of step $i=19$ is reached.
 
 Since the StepNet is a purely daten-driven approach, there is a high probability that it will perform poorly on out-of-distribution data. Therefore, to enhance the robustness of the model, we also use simulated blurry samples from the STL10 dataset during training.
 
