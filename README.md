@@ -1,5 +1,8 @@
-# hdc2021_StepNet (In Progress)
-One of the submissions from the ZeTeM Uni Bremen Team for the HDC2021. 
+# HDC 2021 StepNet
+One of the submissions from the ZeTeM Uni Bremen Team for the Helsinki Deblur Challenge 2021 (HDC 2021).
+https://www.fips.fi/HDC2021.php
+
+Team members are listed below.
 
 ## Install 
 Install the package using:
@@ -55,6 +58,8 @@ OCR accuracy on our test set (20 images per step):
 - 17: 25,05
 - 18: 23,15
 - 19: 17,10
+
+## Examples
 
 ## Requirements 
 * numpy = 1.20.3
