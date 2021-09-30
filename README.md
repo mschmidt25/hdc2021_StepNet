@@ -62,11 +62,15 @@ OCR accuracy on our test set (20 images per step):
 ## Examples
 
 ## Requirements 
+The main requirements for our code are listed below. You can also use the requirements.txt file to replicate our conda environment.
 * numpy = 1.20.3
 * pytorch = 1.9.0 
 * pytorch-lightning = 1.3.8
 * torchvision = 0.10.0
 * dival = 0.6.1
+* torchvision = 0.10.0
+* pytesseract = 0.3.8
+* fuzzywuzzy = 0.18.0
 
 ## Authors
 Team University of Bremen, Center of Industrial Mathematics (ZeTeM) et al.: 
