@@ -60,6 +60,13 @@ OCR accuracy on our test set (20 images per step):
 - 19: 17,10
 
 ## Examples
+Random reconstructions from the test set on different blur steps:
+![Blur step 2](example_images/step_2test_sample0 "Step 2")
+![Blur step 5](example_images/step_5test_sample9 "Step 5")
+![Blur step 10](example_images/step_10test_sample5 "Step 10")
+![Blur step 12](example_images/step_12test_sample3 "Step 12")
+![Blur step 15](example_images/step_15test_sample17 "Step 15")
+![Blur step 19](example_images/step_19test_sample18 "Step 19")
 
 ## Requirements 
 The main requirements for our code are listed below. You can also use the requirements.txt file to replicate our conda environment.
