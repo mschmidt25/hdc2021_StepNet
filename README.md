@@ -33,6 +33,29 @@ The StepNet training involves 20 different steps to gradually adapt the paramete
 
 Since the StepNet is a purely daten-driven approach, there is a high probability that it will perform poorly on out-of-distribution data. Therefore, to enhance the robustness of the model, we also use simulated blurry samples from the STL10 dataset during training.
 
+### Reference results
+OCR accuracy on our test set (20 images per step):
+- 0: 90,85
+- 1: 91,55
+- 2: 93,35
+- 3: 95,35
+- 4: 94,10
+- 5: 88,45
+- 6: 85,50
+- 7: 92,95
+- 8: 86,80
+- 9: 85,70
+- 10: 83,65
+- 11: 79,65
+- 12: 75,70
+- 13: 67,40
+- 14: 68,35
+- 15: 57,25
+- 16: 38,70
+- 17: 25,05
+- 18: 23,15
+- 19: 17,10
+
 ## Requirements 
 * numpy = 1.20.3
 * pytorch = 1.9.0 
