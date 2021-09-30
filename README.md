@@ -38,35 +38,26 @@ Since the StepNet is a purely daten-driven approach, there is a high probability
 
 ### Reference results
 OCR accuracy on our test set (20 images per step):
-- 0: 90,85
-- 1: 91,55
-- 2: 93,35
-- 3: 95,35
-- 4: 94,10
-- 5: 88,45
-- 6: 85,50
-- 7: 92,95
-- 8: 86,80
-- 9: 85,70
-- 10: 83,65
-- 11: 79,65
-- 12: 75,70
-- 13: 67,40
-- 14: 68,35
-- 15: 57,25
-- 16: 38,70
-- 17: 25,05
-- 18: 23,15
-- 19: 17,10
-
-## Examples
-Random reconstructions from the test set on different blur steps:
-![Blur step 2](example_images/step_2test_sample0 "Step 2")
-![Blur step 5](example_images/step_5test_sample9 "Step 5")
-![Blur step 10](example_images/step_10test_sample5 "Step 10")
-![Blur step 12](example_images/step_12test_sample3 "Step 12")
-![Blur step 15](example_images/step_15test_sample17 "Step 15")
-![Blur step 19](example_images/step_19test_sample18 "Step 19")
+- 0: 90.85
+- 1: 91.55
+- 2: 93.35
+- 3: 95.35
+- 4: 94.10
+- 5: 88.45
+- 6: 85.50
+- 7: 92.95
+- 8: 86.80
+- 9: 85.70
+- 10: 83.65
+- 11: 79.65
+- 12: 75.70
+- 13: 67.40
+- 14: 68.35
+- 15: 57.25
+- 16: 38.70
+- 17: 25.05
+- 18: 23.15
+- 19: 17.10
 
 ## Requirements 
 The main requirements for our code are listed below. You can also use the requirements.txt file to replicate our conda environment.
@@ -89,3 +80,25 @@ Team University of Bremen, Center of Industrial Mathematics (ZeTeM) et al.:
 - Clemens Arndt
 - Gael Rigaud
 - Richard Schmähl
+
+## Examples
+Random reconstructions from the test set on different blur steps:
+
+### Step 2
+![Blur step 2](example_images/step_2test_sample0.png "Step 2")
+
+### Step 5
+![Blur step 5](example_images/step_5test_sample9.png "Step 5")
+
+### Step 10
+![Blur step 10](example_images/step_10test_sample5.png "Step 10")
+
+### Step 12
+![Blur step 12](example_images/step_12test_sample3.png "Step 12")
+
+### Step 15
+![Blur step 15](example_images/step_15test_sample17.png "Step 15")
+
+### Step 19
+![Blur step 19](example_images/step_19test_sample18.png "Step 19")
+
