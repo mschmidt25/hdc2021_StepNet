@@ -6,7 +6,7 @@ import torch
 import matplotlib.pyplot as plt 
 import numpy as np 
 
-from hdc2021_challenge.deblurrer import StepNet_deblurrer
+from hdc2021_challenge.deblurrer.StepNet_deblurrer import StepNetDeblurrer
 
 
 parser = argparse.ArgumentParser(description='Apply Deblurrer to every image in a directory.')
@@ -26,7 +26,7 @@ def main(input_files, output_files, step):
     path_parts = [base_path, experiment_name, version, chkp_name + '.ckpt']
     chkp_path = os.path.join(*path_parts)
 
-    reconstructor = StepNet_deblurrer.load_from_checkpoint(chkp_path)
+    reconstructor = StepNetDeblurrer.load_from_checkpoint(chkp_path)
     reconstructor.to(device)
     
     # Enable reconstruction mode and set correct step
