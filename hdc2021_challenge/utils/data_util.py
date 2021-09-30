@@ -3,7 +3,6 @@ from PIL import Image
 
 import numpy as np 
 import matplotlib.pyplot as plt 
-from numpy.lib.npyio import load
 
 
 BASE_PATH = "/localdata/helsinki_deblur/"
@@ -30,8 +29,6 @@ def load_data(font, step):
 
 
 def load_calibration_images(step, font="Times"):
-    # does the font matter for the calibration image? We have a calibration image both in "Times" and in "Verdana"
-
     # CAM01: not blurry
     # CAM02: blurry 
     cam1_path = os.path.join(*[BASE_PATH, "step" + str(step), font, "CAM01"])

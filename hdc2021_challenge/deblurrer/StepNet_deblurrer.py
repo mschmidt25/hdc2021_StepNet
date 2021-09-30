@@ -8,8 +8,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
 import pytorch_lightning as pl
+import numpy as np
 from dival.reconstructors.networks.unet import get_unet_model
 
+from hdc2021_challenge.utils.ocr import evaluateImage
 from hdc2021_challenge.forward_model.bokeh_blur_rfft_train import BokehBlur
 
 
@@ -46,9 +48,9 @@ DOWN_SHAPES = {
 class StepNetDeblurrer(pl.LightningModule):
     def __init__(self, lr:float = 1e-5, downsampling:int = 1, step:int = 0, scales:int = 4,
                  skip_channels:int = 4, channels:tuple = None, use_sigmoid:bool = False, batch_norm:bool = True,
-                 reuse_input:bool = False):
+                 reuse_input:bool = False, which_loss:str = 'mse', jittering_std:float = 0.0):
         """
-        A deblurrer which consists of 20 U-Nets. The U-Nets are connect in a row. The task of a U-Net i is to
+        A deblurrer which consists of 20 U-Nets. The U-Nets are connect in a row. The task of U-Net i is to
         deblur an image from blurring step i to i-1, where i=-1 is the final output (reconstruction).
 
         For training and inference, the architecture of the network is dynamic. An input with blurring level
@@ -68,6 +70,8 @@ class StepNetDeblurrer(pl.LightningModule):
             use_sigmoid (bool, optional): Sigmoid activation on each U-Net output. Defaults to False.
             batch_norm (bool, optional): Use batch normalization. Defaults to True.
             reuse_input (bool, optional): Add the blurry measurement as an additional input to all U-Nets. Defaults to False.
+            which_loss (str, optional): Choose the loss function from "l1", "mse" and "both". Defaults to "mse".
+            jittering_std (float, optional): Add small Gaussian noise with mean 0 and this std to the measurements. Defaults to 0.0
         """
         super().__init__()
 
@@ -75,6 +79,8 @@ class StepNetDeblurrer(pl.LightningModule):
         self.downsampling = downsampling
         self.step = step
         self.reuse_input = reuse_input
+        self.which_loss = which_loss
+        self.jittering_std = jittering_std
 
         self.blur = BokehBlur(r=RADIUS_DICT[step] / (2**(self.downsampling-1)),
                               shape=DOWN_SHAPES[self.downsampling])
@@ -90,7 +96,9 @@ class StepNetDeblurrer(pl.LightningModule):
             'channels': channels,
             'use_sigmoid': use_sigmoid,
             'batch_norm': batch_norm,
-            'reuse_input': reuse_input
+            'reuse_input': reuse_input,
+            'which_loss': which_loss,
+            'jittering_std': jittering_std
         }
         self.save_hyperparameters(save_hparams)
 
@@ -139,43 +147,139 @@ class StepNetDeblurrer(pl.LightningModule):
         self.step = step
 
     def training_step(self, batch, batch_idx):
-        x, y = batch['Blurred']
-        x = self.down(x)
-        y = self.down(y)
-        y = y + torch.randn(y.shape, device=self.device)*0.005
-        x_hat = self.forward(y)
+        if not isinstance(batch[0], list):
+            batch = [batch]
 
-        x_emnist, _ = batch['EMNIST']
-        y_emnist = self.blur(x_emnist)
-        x_emnist_hat = self.forward(y_emnist) 
+        x, y, _ = batch[0]
 
-        x_stl10, _ = batch['STL10']
-        y_stl10 = self.blur(x_stl10)
-        x_stl10_hat = self.forward(y_stl10) 
+        if self.downsampling > 1:
+            x = self.down(x)
+            y = self.down(y)
 
-        loss = F.mse_loss(x_hat, x) + 0.1 * F.mse_loss(x_emnist_hat, x_emnist) + 0.1 * F.mse_loss(x_stl10_hat, x_stl10)
+        if self.jittering_std > 0:
+            y = y + torch.randn(y.shape,device=self.device)*self.jittering_std
+
+        x_hat = self.forward(y) 
+
+        if self.which_loss == 'l1':
+            l1_loss = torch.nn.L1Loss()
+            loss = l1_loss(x_hat, x)
+        elif self.which_loss == 'both':
+            l1_loss = torch.nn.L1Loss()
+            loss = 0.5*l1_loss(x_hat, x) + 0.5*F.mse_loss(x_hat, x)
+        else: 
+            loss = F.mse_loss(x_hat, x)
+           
+        for i in range(1, len(batch)):
+            x, _ = batch[i]
+            x = x[0:2, ...]
+
+            y = self.blur(x)
+
+            if self.jittering_std > 0:
+                y = y + torch.randn(y.shape,device=self.device)*self.jittering_std
+                x = x + torch.randn(x.shape,device=self.device)*self.jittering_std
+
+            x_hat = self.forward(y) 
+        
+            loss = loss +  0.1 * F.mse_loss(x_hat, x)
+
         self.log('train_loss', loss)
+
+        if batch_idx == 3:
+            self.last_batch = batch
 
         return loss
 
     def validation_step(self, batch, batch_idx):
-        x, y = batch
-        x = self.down(x)
-        y = self.down(y)
-        x_hat = self.forward(y) 
-        
-        loss = F.mse_loss(x_hat, x)
-        self.log('val_loss', loss)
+        x, y, text = batch
 
         if batch_idx == 0:
-            self.first_batch = batch
+            self.first_batch_val = batch
 
+        if self.downsampling > 1:
+            x = self.down(x)
+            y = self.down(y)
+        
+        x_hat = self.forward(y) 
+        
+        if self.which_loss == 'l1':
+            l1_loss = torch.nn.L1Loss()
+            loss = l1_loss(x_hat, x)
+        elif self.which_loss == 'both':
+            l1_loss = torch.nn.L1Loss()
+            loss = 0.5*l1_loss(x_hat, x) + 0.5*F.mse_loss(x_hat, x)
+        else: 
+            loss = F.mse_loss(x_hat, x)
+
+        # preprocess image
+        if self.downsampling > 1:
+            x_hat = self.up(x_hat)
+        x_hat = x_hat.cpu().numpy()
+        x_hat = np.clip(x_hat, 0, 1)
+
+        ocr_acc = []
+        for i in range(len(text)):
+            ocr_acc.append(evaluateImage(x_hat[i, 0, :, :], text[i]))
+
+        # Logging to TensorBoard by default
+        self.log('val_loss', loss)
+        self.log('val_ocr_acc', np.mean(ocr_acc))
+        
         return loss 
     
+    def training_epoch_end(self, result):
+        x, y, _ = self.last_batch[0]
+
+        if self.downsampling:
+            x = self.down(x)
+            y = self.down(y)
+
+        img_grid = torchvision.utils.make_grid(x, normalize=True,
+                                               scale_each=True)
+
+        self.logger.experiment.add_image(
+            "ground truth", img_grid, global_step=self.current_epoch)
+        
+        blurred_grid = torchvision.utils.make_grid(y, normalize=True,
+                                               scale_each=True)
+        self.logger.experiment.add_image(
+            "blurred image", blurred_grid, global_step=self.current_epoch)
+
+        with torch.no_grad():
+            x_hat = self.forward(y)
+
+            reco_grid = torchvision.utils.make_grid(x_hat, normalize=True,
+                                                    scale_each=True)
+            self.logger.experiment.add_image(
+                "deblurred", reco_grid, global_step=self.current_epoch)
+            for idx in range(1, len(self.last_batch)):
+                x, _ = self.last_batch[idx]
+                with torch.no_grad():
+                    y = self.blur(x)
+                    x_hat = self.forward(y) 
+
+                    reco_grid = torchvision.utils.make_grid(x_hat, normalize=True,
+                                                            scale_each=True)
+                    self.logger.experiment.add_image(
+                        "deblurred set " + str(idx) , reco_grid, global_step=self.current_epoch)
+
+                    gt_grid = torchvision.utils.make_grid(x, normalize=True,
+                                                            scale_each=True)
+                    self.logger.experiment.add_image(
+                        "ground set " + str(idx), gt_grid, global_step=self.current_epoch)
+
+                    blurred_grid = torchvision.utils.make_grid(y, normalize=True,
+                                                            scale_each=True)
+                    self.logger.experiment.add_image(
+                        "blurred set " + str(idx), blurred_grid, global_step=self.current_epoch)
+
     def validation_epoch_end(self, result):
-        x, y = self.first_batch
-        x = self.down(x)
-        y = self.down(y)
+        x, y, _ = self.first_batch_val
+        if self.downsampling > 1:
+            x = self.down(x)
+            y = self.down(y)
+
         img_grid = torchvision.utils.make_grid(x, normalize=True,
                                                scale_each=True)
 

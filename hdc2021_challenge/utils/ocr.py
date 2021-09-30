@@ -1,9 +1,7 @@
 from pathlib import Path
 from PIL import Image
 
-import torch
 import yaml
-from dival.util.plot import plot_images
 import numpy as np
 import pytesseract
 from fuzzywuzzy import fuzz
