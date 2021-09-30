@@ -31,7 +31,7 @@ def main(input_files, output_files, step):
     
     # Enable reconstruction mode and set correct step
     reconstructor.prediction_mode = True
-    reconstructor.set_step(step=step)
+    reconstructor.set_step(step=int(step))
 
     for f in os.listdir(input_files):
         if f.endswith("tif"):
