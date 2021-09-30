@@ -72,14 +72,14 @@ OCR accuracy on our test set (20 images per step):
 
 ## Authors
 Team University of Bremen, Center of Industrial Mathematics (ZeTeM) et al.:
-- Alexander Denker
-- Maximilian Schmidt
-- Johannes Leuschner
-- Sören Dittmer
-- Judith Nickel
-- Clemens Arndt
-- Gael Rigaud
-- Richard Schmähl
+- Alexander Denker (Bremen)
+- Maximilian Schmidt (Bremen)
+- Johannes Leuschner (Bremen)
+- Sören Dittmer (Bremen/Cambridge)
+- Judith Nickel (Bremen)
+- Clemens Arndt (Bremen)
+- Gael Rigaud (Bremen)
+- Richard Schmähl (Stuttgart)
 
 ## Examples
 Random reconstructions from the test set on different blur steps:
