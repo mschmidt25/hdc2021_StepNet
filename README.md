@@ -4,6 +4,17 @@ https://www.fips.fi/HDC2021.php
 
 Team members are listed below.
 
+## Requirements
+The main requirements for our code are listed below. You can also use the requirements.txt file to replicate our conda environment.
+* numpy = 1.20.3
+* pytorch = 1.9.0
+* pytorch-lightning = 1.3.8
+* torchvision = 0.10.0
+* dival = 0.6.1
+* torchvision = 0.10.0
+* pytesseract = 0.3.8
+* fuzzywuzzy = 0.18.0
+
 ## Install
 Install the package using:
 
@@ -58,17 +69,6 @@ OCR accuracy on our test set (20 images per step):
 - 17: 25.05
 - 18: 23.15
 - 19: 17.10
-
-## Requirements
-The main requirements for our code are listed below. You can also use the requirements.txt file to replicate our conda environment.
-* numpy = 1.20.3
-* pytorch = 1.9.0
-* pytorch-lightning = 1.3.8
-* torchvision = 0.10.0
-* dival = 0.6.1
-* torchvision = 0.10.0
-* pytesseract = 0.3.8
-* fuzzywuzzy = 0.18.0
 
 ## Authors
 Team University of Bremen, Center of Industrial Mathematics (ZeTeM) et al.:
