@@ -82,7 +82,8 @@ Team University of Bremen, Center of Industrial Mathematics (ZeTeM) et al.:
 - Richard Schmähl (Stuttgart)
 
 ## Examples
-Random reconstructions from the test set on different blur steps:
+Random reconstructions from the test set on different blur steps. For each
+reconstruction, the OCR accuracy on the middle text line is reported.
 
 ### Step 2
 ![Blur step 2](example_images/step_2test_sample0.png "Step 2")
